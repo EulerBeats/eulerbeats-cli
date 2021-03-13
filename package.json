@@ -1,5 +1,5 @@
 {
-    "name": "eulerbeats-cli",
+    "name": "@eulerbeats/eulerbeats-cli",
     "version": "0.0.1",
     "description": "A command-line tool to query the EulerBeats smart contract system",
     "author": "jonson, kangarang",
