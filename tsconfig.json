@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "outDir": "dist",
+        "declaration": true,
         "rootDir": "src",
         "target": "es2019",
         "module": "CommonJS",
@@ -18,5 +19,5 @@
         "sourceMap": true
     },
     "include": ["./**/*.ts"],
-    "exclude": ["node_modules/**/*", ".vscode/**/*"]
+    "exclude": ["node_modules/**/*", "dist/**/*", ".vscode/**/*"]
 }

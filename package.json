@@ -12,10 +12,16 @@
         "node": ">=12"
     },
     "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "bin": {
-        "eb": "./dist/index.js"
+        "eb-cli": "./dist/index.js"
+    },
+    "publishConfig": {
+        "access": "public"
     },
     "scripts": {
+        "build": "tsc",
+        "build:check": "tsc --noEmit",
         "lint": "yarn eslint ./src --ext .js,.ts",
         "lint:fix": "prettier --write './**/*.{js,ts,json}' && yarn lint --fix",
         "eb": "ts-node src/index.ts",
