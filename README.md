@@ -1,5 +1,7 @@
 # eulerbeats-cli
 
+[![npm package](https://img.shields.io/npm/v/@eulerbeats/eulerbeats-cli.svg?type=shield&style=flat-square&color=ffdf6d)](https://www.npmjs.com/package/@eulerbeats/eulerbeats-cli)
+
 EulerBeats CLI is a command-line tool to query the Eulerbeats smart contract system.
 
 This tool uses the Ethereum mainnet as its data source. We try to include at least one public json rpc url as part of the cli, so everything might *just work* for you, but if it doesn't...

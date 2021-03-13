@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Command, Option } from 'commander'
 import * as dotenv from 'dotenv'
 import {
