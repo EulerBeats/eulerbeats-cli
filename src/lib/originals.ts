@@ -27,8 +27,6 @@ export async function originalOwnership(release: Release, options?: BlockTags): 
     const eb = await getTokenContractByAddress(contractAddress)
     const deployBlock = deployBlockForRelease(release)
 
-    console.log('release:', release);
-
     const filter: EventFilter & BlockTags = {
         fromBlock: options?.fromBlock || deployBlock,
         toBlock: options?.toBlock || 'latest',
