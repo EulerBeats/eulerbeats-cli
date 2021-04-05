@@ -2,7 +2,6 @@ import { Command, CommanderError, OptionValues } from 'commander'
 import { BigNumberish } from 'ethers'
 import { sum } from 'lodash'
 import { table } from 'table'
-import { writeFileSync } from 'fs'
 import { printOwnership } from '../lib'
 import { initializeProvider } from '../config'
 import {
@@ -40,9 +39,6 @@ function csvOutput(release: Release, original: OriginalEulerBeat, owners: TokenO
         data = data.concat(`${owner.address},${owner.balance}\n`)
         console.log(`${owner.address},${owner.balance}`)
     }
-
-    // TODO: cache
-    // writeFileSync(`${CACHE_DIR}/${release}-${original.tokenId}-print-holders.csv`, data)
 }
 
 async function handler(trackNumber: BigNumberish, options: OptionValues, command: Command) {
@@ -71,7 +67,7 @@ async function handler(trackNumber: BigNumberish, options: OptionValues, command
     }
 
     console.log(
-        `Fetching print ownership records for track ${original.trackNumber} at block ${targetBlock}`
+        `Fetching ${release} print ownership records for track ${original.trackNumber} at block ${targetBlock}`
     )
 
     const owners = await printOwnership(release, original.trackNumber, {

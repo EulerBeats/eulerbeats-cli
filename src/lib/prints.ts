@@ -11,7 +11,7 @@ export async function printOwnership(
 ): Promise<TokenOwnership[]> {
     const { contractAddress, printTokenId } = contractAndTokenId(release, trackNumber)
 
-    const possibleAddresses = await getAllRecipients(contractAddress, printTokenId)
+    const possibleAddresses = await getAllRecipients(release, printTokenId)
     const tokenBalances = await getTokenBalances(
         contractAddress,
         printTokenId,

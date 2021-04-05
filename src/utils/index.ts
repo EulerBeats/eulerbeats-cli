@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers'
 import { padStart } from 'lodash'
-import { GENESIS_DEPLOY_BLOCK, GENESIS_TRACK_TO_TOKEN_ID } from './constants'
+import { ENIGMA_TRACK_TO_TOKEN_ID, GENESIS_TRACK_TO_TOKEN_ID } from './constants'
 import { Release } from '../types'
 
 export * from './constants'
@@ -27,6 +27,8 @@ export function trackNumberToOriginalTokenId(
     let tokenId = undefined
     if (release === Release.genesis) {
         tokenId = GENESIS_TRACK_TO_TOKEN_ID[trackNumberString]
+    } else if (release === Release.enigma) {
+        tokenId = ENIGMA_TRACK_TO_TOKEN_ID[trackNumberString]
     }
 
     if (!tokenId) {
@@ -37,11 +39,4 @@ export function trackNumberToOriginalTokenId(
         trackNumber: trackNumberString,
         release,
     }
-}
-
-export function deployBlockForRelease(release: Release) {
-    if (release === Release.genesis) {
-        return GENESIS_DEPLOY_BLOCK
-    }
-    throw Error(`No deploy information for release ${release}`)
 }

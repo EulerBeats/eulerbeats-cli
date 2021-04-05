@@ -1,7 +1,7 @@
 import { BigNumberish, BigNumber } from 'ethers'
 import padStart from 'lodash/padStart'
 import { Release } from '../types'
-import { GENESIS_TRACK_TO_TOKEN_ID, GENESIS_TOKEN_CONTRACT_ADDRESS } from './constants'
+import { GENESIS_TRACK_TO_TOKEN_ID, GENESIS_TOKEN_CONTRACT_ADDRESS, ENIGMA_TOKEN_CONTRACT_ADDRESS, ENIGMA_TRACK_TO_TOKEN_ID } from './constants'
 
 export interface TokenOwnership {
     contractAddress: string
@@ -30,16 +30,26 @@ export const tokenIdToPrintId = (release: Release, tokenId: BigNumberish): BigNu
 
         const printBinary = `1${binaryRepr.substring(1)}`
         return BigNumber.from(parseInt(printBinary, 2))
+    } else if (release === Release.enigma) {
+        return BigNumber.from(tokenId).add(1);
     } else {
         throw Error('Release not yet supported')
     }
 }
 
 export function contractAndTokenId(release: Release, trackNumber: string) {
-    if (release !== Release.genesis) {
-        throw Error(`Unsupported release: ${release}`)
+
+    let contractAddress
+    let originalTokenId
+    if (release === Release.genesis) {
+        contractAddress = GENESIS_TOKEN_CONTRACT_ADDRESS
+        originalTokenId = GENESIS_TRACK_TO_TOKEN_ID[trackNumber]
+    } else if (release === Release.enigma) {
+        contractAddress = ENIGMA_TOKEN_CONTRACT_ADDRESS
+        originalTokenId = ENIGMA_TRACK_TO_TOKEN_ID[trackNumber]
+    } else {
+        throw Error('Unsupported release')
     }
-    const originalTokenId = GENESIS_TRACK_TO_TOKEN_ID[trackNumber]
 
     if (!originalTokenId) {
         throw Error(`Unknown track number: ${trackNumber}`)
@@ -47,7 +57,7 @@ export function contractAndTokenId(release: Release, trackNumber: string) {
     const printTokenId = tokenIdToPrintId(release, originalTokenId).toString()
 
     return {
-        contractAddress: GENESIS_TOKEN_CONTRACT_ADDRESS,
+        contractAddress,
         printTokenId,
         originalTokenId,
     }
