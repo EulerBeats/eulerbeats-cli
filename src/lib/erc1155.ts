@@ -1,8 +1,7 @@
-import { constants, BigNumber, BigNumberish } from 'ethers'
+import { constants, BigNumber } from 'ethers'
 import { fill } from 'lodash'
-import { GENESIS_DEPLOY_BLOCK, getTokenContractByAddress } from '../utils'
-import { EthCallOptions } from '../types'
-import { formatEther } from 'ethers/lib/utils'
+import { contractAddressForRelease, deployBlockForRelease, getTokenContractByAddress } from '../utils'
+import { EthCallOptions, Release } from '../types'
 
 /**
  * Returns all addresses who have ever received the given token.  This does not mean
@@ -13,15 +12,16 @@ import { formatEther } from 'ethers/lib/utils'
  * @param tokenId
  */
 export async function getAllRecipients(
-    contractAddress: string,
+    release: Release,
     tokenId: string
 ): Promise<string[]> {
+    const contractAddress = contractAddressForRelease(release)
     const contract = await getTokenContractByAddress(contractAddress)
+    const deployBlock = deployBlockForRelease(release)
     const blockNumber = await contract.provider.getBlockNumber()
 
     const tokenIdBn = BigNumber.from(tokenId)
     const addresses = new Set<string>()
-    const deployBlock = GENESIS_DEPLOY_BLOCK
 
     const filter = contract.filters.TransferSingle(null, null, null, null, null)
     const events = await contract.queryFilter(filter, deployBlock, blockNumber)
@@ -86,12 +86,11 @@ export interface RoyaltiesPaid {
 
 export async function getRoyalties(
     contractAddress: string,
+    deployBlock: number,
     blockNumber: number,
     royaltyOptions?: RoyaltyOptions,
 ) {
     const contract = await getTokenContractByAddress(contractAddress)
-
-    const deployBlock = GENESIS_DEPLOY_BLOCK
 
     let royaltyRecipient: string | null = null;
     if (royaltyOptions?.address) {

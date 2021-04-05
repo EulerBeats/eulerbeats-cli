@@ -5,6 +5,7 @@ import { table } from 'table'
 import { initializeProvider } from '../config'
 import { getRoyalties } from '../lib/erc1155'
 import {
+    contractAddressForRelease,
     deployBlockForRelease,
     GENESIS_TOKEN_CONTRACT_ADDRESS,
     originalIdToTrackName,
@@ -43,6 +44,8 @@ function tableOutput(totalInEth: string, grouped: any, rows: string[][]) {
 export async function royaltiesAction(options: OptionValues, command: Command) {
     const release = options.release
     const provider = await initializeProvider(options.rpc)
+    const contractAddress = contractAddressForRelease(release)
+    const deployBlock = deployBlockForRelease(release)
 
     let targetBlock = options.block
     if (targetBlock) {
@@ -75,7 +78,8 @@ export async function royaltiesAction(options: OptionValues, command: Command) {
     }
 
     const royalties = await getRoyalties(
-        GENESIS_TOKEN_CONTRACT_ADDRESS,
+        contractAddress,
+        deployBlock,
         targetBlock,
         royaltyOptions
     )

@@ -20,9 +20,6 @@ export function parseBlockOption(value, dummyPrevious) {
 
 export function parseReleaseOption(value, dummyPrevious) {
     const release = Release[value]
-    if (release !== Release.genesis) {
-        throw new InvalidOptionArgumentError(`Release ${value} not currently supported`)
-    }
     return release
 }
 
