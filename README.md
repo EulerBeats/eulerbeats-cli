@@ -12,18 +12,19 @@ Some commands allow you to get the state of the blockchain at a certain point in
 
 Join the #dev channel on our [Discord server](https://discord.gg/zmkpBsE4Me) for updates, tips & tricks and more.
 
-## Installation
+## Quickstart
 
-To install the `eb` tool, we currently recommend using the latest version in this repo, as we are actively working on it.  Once we have a stable version published to npm, we'll update accordingly!
+Globally
 
-    $ git clone https://github.com/EulerBeats/eulerbeats-cli
-    $ cd eulerbeats-cli
-    $ yarn
+    $ npm install -g @eulerbeats/eulerbeats-cli
 
+    $ eb-cli
 
-Once it's installed, just run this command and follow its instructions:
+Locally
 
-    $ yarn eb
+    $ npm install @eulerbeats/eulerbeats-cli
+
+    $ npx eb-cli
 
 ## JSON RPC Configuration
 
