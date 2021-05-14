@@ -1,7 +1,8 @@
-import { utils } from 'ethers'
+import { Contract, utils } from 'ethers'
 import { jsonRpcProvider } from '../config'
 import { EulerBeatsV1, EulerBeatsV1Factory, Release } from '../types'
-import { ENIGMA_DEPLOY_BLOCK, ENIGMA_TOKEN_CONTRACT_ADDRESS, GENESIS_DEPLOY_BLOCK, GENESIS_TOKEN_CONTRACT_ADDRESS } from './constants'
+import { ENIGMA_DEPLOY_BLOCK, ENIGMA_TOKEN_CONTRACT_ADDRESS, GENESIS_DEPLOY_BLOCK, GENESIS_TOKEN_CONTRACT_ADDRESS, STAKING_CONTRACT_ADDRESS } from './constants'
+import { ABI as STAKING_ABI } from '../types/staking'
 
 // Gets token wrapper for an address
 export const getTokenContractByAddress = async (address: string): Promise<EulerBeatsV1> => {
@@ -32,4 +33,14 @@ export const deployBlockForRelease = (release: Release) => {
         return ENIGMA_DEPLOY_BLOCK
     }
     throw Error('Unsupported release')   
+}
+
+export const getStakingContract = async () => {
+    try {
+        const provider = await jsonRpcProvider()
+        return new Contract(STAKING_CONTRACT_ADDRESS, STAKING_ABI, provider);
+    } catch (error) {
+        console.log(`error:`, error)
+        throw error
+    }
 }
