@@ -13,6 +13,7 @@ import {
     tableConfig,
 } from '../utils'
 import { Release } from '../types'
+import { stakedBalances } from '../lib/staking'
 
 function tableOutput(release: Release, original: OriginalEulerBeat, owners: TokenOwnership[]) {
     const uniqueOwners = owners.length
@@ -70,7 +71,11 @@ async function handler(trackNumber: BigNumberish, options: OptionValues, command
         `Fetching ${release} print ownership records for track ${original.trackNumber} at block ${targetBlock}`
     )
 
-    const owners = await printOwnership(release, original.trackNumber, {
+    if (!options.stakers) {
+        console.log('Excluding accounts that are staking, the staking contract will instead be shown')
+    }
+
+    const owners = await printOwnership(release, original.trackNumber, options.stakers, {
         blockTag: targetBlock,
     })
 

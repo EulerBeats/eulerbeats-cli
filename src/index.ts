@@ -40,7 +40,6 @@ function addOriginalsCommand() {
         .addOption(rpcProviderOption())
         .addOption(blockOption())
         .addOption(releaseOption())
-        .addOption(new Option('--track <track-number>', 'Track number to filter by.'))
         .addOption(
             new Option('--address <address>', 'Address to filter by.').argParser(
                 parseEthAddressOption
@@ -70,6 +69,7 @@ function addPrintsCommand() {
         .addOption(rpcProviderOption())
         .addOption(blockOption())
         .addOption(releaseOption())
+        .addOption(new Option('--no-stakers', 'Exclude stakers'))
         .addOption(
             new Option(
                 '-o, --output <format>',
