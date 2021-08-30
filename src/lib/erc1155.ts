@@ -1,50 +1,70 @@
 import { constants, BigNumber } from 'ethers'
-import { fill } from 'lodash'
+import { fill, last } from 'lodash'
 import { contractAddressForRelease, deployBlockForRelease, getTokenContractByAddress } from '../utils'
 import { EthCallOptions, Release } from '../types'
+
+
+const MAX_BLOCKS_PER_QUERY = 100_000
 
 /**
  * Returns all addresses who have ever received the given token.  This does not mean
  * they are still in possession of the token, so callers should use a balanaceOf
  * query to validate this!
+ * 
+ * If no token is passed in, this will assume all tokens for the release.
  *
  * @param contractAddress
  * @param tokenId
  */
 export async function getAllRecipients(
     release: Release,
-    tokenId: string
+    tokenId?: string,
+    blockNumber?: number,
 ): Promise<string[]> {
     const contractAddress = contractAddressForRelease(release)
     const contract = await getTokenContractByAddress(contractAddress)
     const deployBlock = deployBlockForRelease(release)
-    const blockNumber = await contract.provider.getBlockNumber()
-
-    const tokenIdBn = BigNumber.from(tokenId)
-    const addresses = new Set<string>()
-
-    const filter = contract.filters.TransferSingle(null, null, null, null, null)
-    const events = await contract.queryFilter(filter, deployBlock, blockNumber)
-
-    for (const event of events) {
-        const { to, id, value } = event.args
-        if (to !== constants.AddressZero && tokenIdBn.eq(id) && value.gt(0)) {
-            addresses.add(to)
-        }
+    if (!blockNumber) {
+        blockNumber = await contract.provider.getBlockNumber()
     }
 
-    // for completeness, also do transfer batch
-    const tbFilter = contract.filters.TransferBatch(null, null, null, null, null)
-    const tbEvents = await contract.queryFilter(tbFilter, deployBlock, blockNumber)
+    const tokenIdBn = BigNumber.from(tokenId ? tokenId : 0)
+    
+    const addresses = new Set<string>()
 
-    for (const event of tbEvents) {
-        const { to, ids, values } = event.args
-        // event.args!.values does not work due to clashing with values in the ReadonlyArray class
-        // so just skip checking the balance
-        const idsAsStrings = ids.map(id => id.toString())
-        if (to !== constants.AddressZero && idsAsStrings.includes(tokenIdBn.toString())) {
-            addresses.add(to)
+    const singleFilter = contract.filters.TransferSingle(null, null, null, null, null)
+    const batchFilter = contract.filters.TransferBatch(null, null, null, null, null)
+
+    let startBlock = deployBlock
+
+    while (startBlock < blockNumber) {
+
+        const endBlock = Math.min(startBlock + MAX_BLOCKS_PER_QUERY, blockNumber)
+        const singleEvents = await contract.queryFilter(singleFilter, startBlock, endBlock)
+
+        for (const event of singleEvents) {
+            const { to, id, value } = event.args
+
+            if (to !== constants.AddressZero && value.gt(0)) {
+                if (tokenIdBn.eq(0) || tokenIdBn.eq(id)) {
+                    addresses.add(to)
+                }
+            }
         }
+
+        const batchEvents = await contract.queryFilter(batchFilter, startBlock, endBlock)
+
+        for (const event of batchEvents) {
+            const { to, ids } = event.args
+            const idsAsStrings = ids.map(id => id.toString())
+            
+            if (to !== constants.AddressZero) {
+                if (tokenIdBn.eq(0) || idsAsStrings.includes(tokenIdBn.toString())) {
+                    addresses.add(to)
+                }
+            }
+        }
+        startBlock += MAX_BLOCKS_PER_QUERY
     }
 
     return Array.from(addresses)

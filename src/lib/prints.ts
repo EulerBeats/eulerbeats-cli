@@ -21,7 +21,6 @@ export async function printOwnership(
         options
     )
 
-    // get the stakers if desired too
     let stakers
     if (includeStakers) {
         stakers = await stakedBalances(release, trackNumber, options)
