@@ -37,3 +37,13 @@ Internally the program does one of the following:
 ## Development
 
 We would love to have your helping hand on eulerbeats-cli! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on what we're looking for and how to get started.
+
+## Publishing
+
+Build app to `dist/`
+
+    $ npm build
+
+Publish app to npm (includes `dist/`)
+
+    $ npm publish
