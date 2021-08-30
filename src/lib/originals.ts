@@ -21,21 +21,43 @@ interface BlockTags {
     toBlock: number | string
 }
 
+
+const MAX_BLOCKS_PER_QUERY = 100_000
+
 export async function originalOwnership(release: Release, options?: BlockTags): Promise<any> {
     
     const contractAddress = contractAddressForRelease(release)
     const eb = await getTokenContractByAddress(contractAddress)
     const deployBlock = deployBlockForRelease(release)
 
-    const filter: EventFilter & BlockTags = {
-        fromBlock: options?.fromBlock || deployBlock,
-        toBlock: options?.toBlock || 'latest',
-        address: contractAddress,
-        topics: [[eventTopics.MintOriginal, eventTopics.TransferSingle, eventTopics.TransferBatch]],
+
+    let blockNumber;
+    if (options && options.toBlock && options.toBlock !== 'latest') {
+        blockNumber = options.toBlock
+    } else {
+        blockNumber = await eb.provider.getBlockNumber()
     }
 
-    const logs: providers.Log[] = await eb.provider.getLogs(filter)
+    const logs: providers.Log[] = []
 
+    let startBlock = deployBlock;
+
+    while (startBlock < blockNumber) {
+        const endBlock = Math.min(startBlock + MAX_BLOCKS_PER_QUERY, blockNumber)
+        const filter: EventFilter & BlockTags = {
+            fromBlock: startBlock,
+            toBlock: endBlock,
+            address: contractAddress,
+            topics: [[eventTopics.MintOriginal, eventTopics.TransferSingle, eventTopics.TransferBatch]],
+        }
+
+        const blockRangeLogs: providers.Log[] = await eb.provider.getLogs(filter)
+        if (blockRangeLogs.length > 0) {
+            logs.push(...blockRangeLogs)
+        }
+        startBlock += MAX_BLOCKS_PER_QUERY
+    }
+    
     const grouped = groupBy(logs, 'topics.0')
 
     const mintOriginalLogs: providers.Log[] = grouped[eventTopics.MintOriginal] || []

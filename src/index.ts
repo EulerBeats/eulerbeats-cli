@@ -12,6 +12,7 @@ import {
     originalOwnershipHistory,
     listPrintHolders,
     royaltiesAction,
+    snapshotHolders,
 } from './actions'
 
 dotenv.config()
@@ -82,9 +83,28 @@ function addPrintsCommand() {
 }
 
 
+function addSnapshotCommand() {
+    const printsCommand = program
+        .command('snapshot')
+        .description('Takes a snapshot of all holders for all tokens')
+        .addOption(rpcProviderOption())
+        .addOption(blockOption())
+        .addOption(
+            new Option(
+                '-o, --output <format>',
+                'The format of the output, either table (default) or csv.'
+            )
+                .choices(['table', 'csv'])
+                .default('table')
+        )
+        .action(snapshotHolders)
+}
+
+
 async function main() {
     addOriginalsCommand()
     addPrintsCommand()
+    addSnapshotCommand()
 
     await program.parseAsync()
 }
