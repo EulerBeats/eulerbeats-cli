@@ -1,6 +1,6 @@
 {
     "name": "@eulerbeats/eulerbeats-cli",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "A command-line tool to query the EulerBeats smart contract system",
     "author": "jonson, kangarang",
     "license": "Apache-2.0",
@@ -29,8 +29,8 @@
     },
     "dependencies": {
         "commander": "^7.1.0",
-        "ethers": "^5.0.31",
         "dotenv": "^8.2.0",
+        "ethers": "^5.0.31",
         "lodash": "^4.17.21",
         "memoizee": "^0.4.15",
         "table": "^6.0.7"
